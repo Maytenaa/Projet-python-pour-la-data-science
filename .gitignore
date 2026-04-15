@@ -1,3 +1,23 @@
+# Environnement virtuel 
+.venv/
+env/
+venv/
+__pycache__/
+
+# Données 
+data/
+*.csv
+*.gz
+*.geojson
+
+# Configuration locale et secrets
+.env
+.DS_Store# Données
+data/
+*.csv
+*.geojson
+*.gz
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

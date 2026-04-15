@@ -1,0 +1,32 @@
+Objectifs : 
+- entrainer un modèle a partir des données du prix de l'immobilier proche des stations de métro 
+avant et après la création de ces stations (surtout ligne B en 2022) pour comparer la hausse du 
+prix de l'immo et pouvoir predir si on rajoute une station le hausse du prix de l'immo autour 
+des coordonnes de cette dite station (regarder peut etre l'annonce de la creation plutot que la 
+mise en service mpeut etre faire des stats desc pour voir ce qui est le plus pertinants a partir des données de metro b)
+
+A faire 
+
+preprocessing.py : Filtrer les transactions aberrantes (prix trop bas/haut)
+calculer les distances spatiales et attribuer les groupes (traité/contrôle)
+
+stats desc 
+
+model.py : 
+Entraîner le modèle : Régression Linéaire avec effets fixes 
+ou un modèle de type XGBoost si bcp de données
+
+verifier les gitignore et requirements les trucs de .env .venv 
+verifier la reproductivité, faire des tests 
+ecriture du read me 
+
+Orga du repo à terme
+Projet-python-pour-la-data-science/
+├── data/              # dossier ignoré par Git (contient les données brutes/traitées)
+├── notebooks/         # exploration
+├── src/               # code source réutilisable (modules .py)
+├── results/           # Graphiques et outputs exportés
+├── tests/             # Tests unitaires ??
+├── README.md
+├── requirements.txt   
+└── .gitignore
