@@ -21,29 +21,44 @@ def fetch_metro_api():
     try:
         # GeoPandas lit directement l'URL d'un flux GeoJSON
         gdf_metro = gpd.read_file(url)
-        print(f"Succès : {len(gdf_metro)} points d'arrêt de métro récupérés.")
         return gdf_metro
     except Exception as e:
         print(f"Erreur lors de la récupération du métro : {e}")
         return None
 
-def fetch_dvf_api(code_commune="35238"):
-    pass
+def fetch_dvf_api():
+    """
+    Récupère les données DVF via un miroir stable ou le stockage s3 si disponible.
+    """
+    print("--- Récupération DVF (Source miroir stable) ---")
+    
+    # URL vers un export consolidé spécifique (millésime 2023 complet)
+    url = "https://files.data.gouv.fr/geo-dvf/latest/csv/2023/full.csv.gz"
+    
+    try:
+        print("Téléchargement en cours")
+        
+        chunks = pd.read_csv(url, compression='gzip', sep=',', low_memory=False, chunksize=100000)
+        
+        df_rennes_list = []
+        for chunk in chunks:
+            filtered_chunk = chunk[chunk['code_commune'].astype(str).str.contains('35238')].copy()
+            df_rennes_list.append(filtered_chunk)
+            
+        df_rennes = pd.concat(df_rennes_list)
+
+        return df_rennes
+    except Exception as e:
+        print(f"Erreur lors de la récupération des données : {e}")
+        return None
 
 def main():
-    # 1. Récupération et sauvegarde du Métro
     gdf_metro = fetch_metro_api()
     if gdf_metro is not None:
         metro_path = os.path.join(DATA_DIR, "metro_stations.geojson")
         gdf_metro.to_file(metro_path, driver='GeoJSON')
-        print(f"Fichier métro sauvegardé : {metro_path}")
 
-    # 2. Récupération et sauvegarde des DVF
     df_dvf = fetch_dvf_api()
     if df_dvf is not None:
         dvf_path = os.path.join(DATA_DIR, "dvf_rennes_raw.csv")
         df_dvf.to_csv(dvf_path, index=False)
-        print(f"Fichier DVF sauvegardé : {dvf_path}")
-
-if __name__ == "__main__":
-    main()

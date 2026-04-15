@@ -7,7 +7,7 @@ mise en service peut etre faire des stats desc pour voir ce qui est le plus pert
 
 #A faire 
 get_data.py : extraire les données 
-
+Mettre le csv en tableau
 preprocessing.py : Filtrer les transactions aberrantes (prix trop bas/haut)
 calculer les distances spatiales et attribuer les groupes (traité/contrôle) pour avoir 
 ce genre de bdd : ID_Vente	Prix_m2	Date_Vente	Dist_Metro_Proche	Traité (Distant < 500m)	Periode_Post	Nb_Pieces	Surface	Revenu_Quartier
