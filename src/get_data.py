@@ -36,8 +36,6 @@ def fetch_dvf_api():
     url = "https://files.data.gouv.fr/geo-dvf/latest/csv/2023/full.csv.gz"
     
     try:
-        print("Téléchargement en cours")
-        
         chunks = pd.read_csv(url, compression='gzip', sep=',', low_memory=False, chunksize=100000)
         
         df_rennes_list = []
@@ -62,3 +60,5 @@ def main():
     if df_dvf is not None:
         dvf_path = os.path.join(DATA_DIR, "dvf_rennes_raw.csv")
         df_dvf.to_csv(dvf_path, index=False)
+if __name__ == "__main__":
+    main()
