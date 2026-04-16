@@ -40,7 +40,11 @@ def fetch_dvf_api():
         
         df_rennes_list = []
         for chunk in chunks:
-            filtered_chunk = chunk[chunk['code_commune'].astype(str).str.contains('35238')].copy()
+            # On définit la liste des codes communes souhaités
+            codes_recherche = ['35238', '35051', '35281']
+
+            # On filtre le chunk
+            filtered_chunk = chunk[chunk['code_commune'].astype(str).isin(codes_recherche)].copy()
             df_rennes_list.append(filtered_chunk)
             
         df_rennes = pd.concat(df_rennes_list)
