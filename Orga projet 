@@ -34,3 +34,15 @@ Projet-python-pour-la-data-science/
 ├── README.md
 ├── requirements.txt   
 └── .gitignore
+
+Ce qui compte pour l'evalutation 
+
+soutenance de 10 min : ptcher mettre en valeur ceux qu'on a fait, la demarche, les pts techniques 
+lancer le notebook avant la soutenance pour montrer 
+attention aux bonnes pratiques 
+requeter données par api 
+preprocessing serieux 
+data viz 
+pas de data dans le repo 
+reproductivité : critere principal 
+

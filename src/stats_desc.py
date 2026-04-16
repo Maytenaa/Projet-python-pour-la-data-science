@@ -1,4 +1,7 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import statsmodels.formula.api as smf
 
 
 def get_general_stats(gdf):
@@ -62,6 +65,46 @@ def analyse_prix_dist_tranche(gdf):
     return resultat
 
 
+def plot_prix_par_tranche(df_resultat):
+    """
+    Génère un graphique à barres montrant le prix moyen par tranche de distance.
+    """
+    plt.figure(figsize=(10, 6))
+
+    # Création du graphique à barres
+    sns.set_theme(style="whitegrid")
+    ax = sns.barplot(
+        data=df_resultat,
+        x="Tranche de distance",
+        y="Prix moyen au m2 (€)",
+        palette="viridis",
+    )
+
+    # Ajout des étiquettes de prix au-dessus de chaque barre
+    for p in ax.patches:
+        ax.annotate(
+            f"{p.get_height():.0f} €",
+            (p.get_x() + p.get_width() / 2.0, p.get_height()),
+            ha="center",
+            va="center",
+            xytext=(0, 9),
+            textcoords="offset points",
+            fontsize=11,
+            fontweight="bold",
+        )
+
+    plt.title(
+        "Impact de la proximité du métro sur le prix immobilier à Rennes", fontsize=14
+    )
+    plt.xlabel("Distance à la station la plus proche", fontsize=12)
+    plt.ylabel("Prix moyen au m² (€)", fontsize=12)
+
+    # Ajustement des marges pour ne pas couper les étiquettes
+    plt.ylim(0, df_resultat["Prix moyen au m2 (€)"].max() * 1.15)
+
+    plt.show()
+
+
 def compare_proximity_controlled(gdf, variable_controle="type_local"):
     """
     Compare les prix par tranche de distance en neutralisant une variable (ex: type de bien).
@@ -85,3 +128,58 @@ def compare_proximity_controlled(gdf, variable_controle="type_local"):
     ) * 100
 
     return comparaison
+
+
+# DiD
+
+
+def prepare_did_data(gdf):
+    df_did = gdf.copy()
+
+    # 1. Calcul de la distance minimale au métro (A ou B)
+    # On crée une colonne temporaire pour simplifier la condition
+    dist_min = gdf[["dist_metro_A", "dist_metro_B"]].min(axis=1)
+
+    # 2. Définir le groupe Traité (< 250m de n'importe quelle ligne)
+    df_did["treated"] = (dist_min <= 250).astype(int)
+
+    # 3. Définir la période Post-ouverture (Ligne B : 20 Septembre 2022)
+    # Attention : comme vu précédemment, assure-toi d'avoir des données avant cette date !
+    df_did["post_event"] = (df_did["date_mutation"] >= "2022-09-20").astype(int)
+
+    return df_did
+
+
+def run_did_regression(df_did):
+    # Modèle avec contrôles pour neutraliser les autres effets
+    # On ajoute le type_local et les pièces pour comparer des choses comparables
+    model = smf.ols(
+        formula="prix_m2 ~ treated * post_event + type_local + nombre_pieces_principales",
+        data=df_did,
+    ).fit()
+
+    return model
+
+
+def plot_did_trends(df_did):
+    # On crée une colonne Année-Mois pour voir l'évolution
+    df_did["period"] = df_did["date_mutation"].dt.to_period(
+        "Q"
+    )  # Par trimestre pour plus de lissé
+
+    # Calcul des moyennes par période et par groupe
+    trends = df_did.groupby(["period", "treated"])["prix_m2"].mean().unstack()
+
+    # Plot
+    trends.plot(figsize=(12, 6), marker="o")
+    plt.axvline(
+        x=pd.Period("2022Q3"), color="red", linestyle="--", label="Ouverture Ligne B"
+    )
+    plt.title("Évolution des prix : Groupe Traité vs Groupe Contrôle")
+    plt.ylabel("Prix moyen au m² (€)")
+    plt.legend(["Contrôle (Loin)", "Traité (Ligne B)"])
+    plt.grid(True, alpha=0.3)
+    plt.show()
+
+
+
