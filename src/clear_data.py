@@ -1,5 +1,15 @@
 import geopandas as gpd
+import pandas as pd
 
+def merge_yearly_dvf(df_list):
+    """
+    Fusionne une liste de DataFrames DVF en un seul.
+    ignore_index=True est crucial pour refaire une indexation propre de 0 à N.
+    """
+    print("\n--- Fusion des bases DVF en cours ---")
+    df_merged = pd.concat(df_list, ignore_index=True)
+    print(f"Fusion terminée. Taille finale : {df_merged.shape[0]} lignes, {df_merged.shape[1]} colonnes.")
+    return df_merged
 
 def clean_dvf_data(df_raw):
     """
@@ -111,6 +121,16 @@ def clean_metro_data(gdf_metro_raw):
 
     return gdf
 
+def remove_extreme_values(gdf, variable, seuil_bas, seuil_haut):
+    """
+    Filtre le GeoDataFrame en fonction des seuils déterminés lors de l'analyse.
+    """   
+    # Application des filtres 
+    mask = (gdf[f'{variable}'] >= seuil_bas) & (gdf[f'{variable}'] <= seuil_haut)
+    # Filtrage final
+    df_filtered = gdf[mask].copy()
+     
+    return df_filtered
 
 def merge_dvf_by_line(gdf_dvf, gdf_metro):
     """

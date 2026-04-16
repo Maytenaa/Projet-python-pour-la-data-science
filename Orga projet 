@@ -7,7 +7,9 @@ mise en service peut etre faire des stats desc pour voir ce qui est le plus pert
 
 #A faire 
 
-clear date: Filtrer les transactions aberrantes (prix trop bas/haut) après une étude statistique
+clear date: 
+Montrer dans le note book les études qui poussent à une certaine modification des données (dans clear data)
+Filtrer les transactions aberrantes (prix trop bas/haut) après une étude statistique
 calculer les distances spatiales et attribuer les groupes (traité/contrôle) pour avoir 
 ce genre de bdd : ID_Vente	Prix_m2	Date_Vente	Dist_Metro_Proche	Traité (Distant < 500m)	Periode_Post	Nb_Pieces	Surface	Revenu_Quartier
 
