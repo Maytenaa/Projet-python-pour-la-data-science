@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def get_general_stats(gdf):
     """
     Retourne les statistiques descriptives globales du prix au m2.
@@ -20,12 +23,31 @@ def get_stats_by_ligne(gdf):
     )
 
 
-def analyse_prix_dist_corr(gdf):
+def analyse_prix_dist_tranche(gdf):
     """
-    Calcule la corrélation entre le prix au m2 et la distance au métro.
+    Calcule le prix moyen au m2 selon des tranches de distance au métro.
     """
-    # On prend la distance au métro le plus proche (A ou B)
-    gdf["dist_min_metro"] = gdf[["dist_metro_A", "dist_metro_B"]].min(axis=1)
 
-    correlation = gdf["prix_m2"].corr(gdf["dist_min_metro"])
-    return correlation
+    # Définir les tranches et les étiquettes
+    # On commence à -1 pour inclure le 0, et float('inf') pour "plus de 800m"
+    bins = [-1, 250, 500, 800, float("inf")]
+    labels = ["< 250m", "250m - 500m", "500m - 800m", "> 800m"]
+
+    # Créer la colonne de segments
+    gdf["tranche_distance"] = pd.cut(gdf["dist_min_metro"], bins=bins, labels=labels)
+
+    # Grouper et calculer la moyenne (et le compte pour vérification)
+    resultat = (
+        gdf.groupby("tranche_distance", observed=False)["prix_m2"]
+        .agg(["mean", "count"])
+        .reset_index()
+    )
+
+    # Renommer pour plus de clarté
+    resultat.columns = [
+        "Tranche de distance",
+        "Prix moyen au m2 (€)",
+        "Nombre de ventes",
+    ]
+
+    return resultat

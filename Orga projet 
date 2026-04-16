@@ -12,7 +12,7 @@ preprocessing.py : Filtrer les transactions aberrantes (prix trop bas/haut)
 calculer les distances spatiales et attribuer les groupes (traité/contrôle) pour avoir 
 ce genre de bdd : ID_Vente	Prix_m2	Date_Vente	Dist_Metro_Proche	Traité (Distant < 500m)	Periode_Post	Nb_Pieces	Surface	Revenu_Quartier
 
-stats desc 
+stats_desc.py 
 
 model.py : 
 Entraîner le modèle : Régression Linéaire avec effets fixes (diff in diff)
