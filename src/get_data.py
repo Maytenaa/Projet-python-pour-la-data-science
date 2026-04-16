@@ -43,9 +43,7 @@ def fetch_dvf_api():
 
         df_rennes_list = []
         for chunk in chunks:
-            filtered_chunk = chunk[
-                chunk["code_commune"].astype(str).str.contains("35238")
-            ].copy()
+            filtered_chunk = chunk[chunk['code_commune'].astype(str).str.contains('35238')].copy()
             df_rennes_list.append(filtered_chunk)
 
         df_rennes = pd.concat(df_rennes_list)

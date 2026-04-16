@@ -6,13 +6,15 @@ des coordonnes de cette dite station (regarder peut etre l'annonce de la creatio
 mise en service peut etre faire des stats desc pour voir ce qui est le plus pertinants a partir des données de metro b)
 
 #A faire 
-get_data.py : extraire les données 
-Mettre le csv en tableau
-preprocessing.py : Filtrer les transactions aberrantes (prix trop bas/haut)
+
+clear date: Filtrer les transactions aberrantes (prix trop bas/haut) après une étude statistique
 calculer les distances spatiales et attribuer les groupes (traité/contrôle) pour avoir 
 ce genre de bdd : ID_Vente	Prix_m2	Date_Vente	Dist_Metro_Proche	Traité (Distant < 500m)	Periode_Post	Nb_Pieces	Surface	Revenu_Quartier
 
-stats_desc.py 
+stats desc 
+des moyennes sur les données et etc
+quelques graphiques notamment des cartes heat map sur le prix au m²
+penser à l'analyse avant 2022
 
 model.py : 
 Entraîner le modèle : Régression Linéaire avec effets fixes (diff in diff)
