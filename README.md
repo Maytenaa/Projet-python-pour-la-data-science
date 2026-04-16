@@ -1,6 +1,6 @@
 ### IMPACT DE LA MISE EN SERVICE D'UNE NOUVELLE STATION DE METRO SUR LE PRIX DE L'IMMOBILIER
 ## Projet python pour la data science 2A 
-*Sonny Augusto, Abel Cornet-Carlos, Mayténa Labinsky* 
+*Sonny Augusto, Abel Cornet-Carlos et Mayténa Labinsky* 
 
 
 # Objectifs 
