@@ -6,12 +6,12 @@ def clean_dvf_data(df_raw):
     Nettoie les données DVF : filtrage Rennes, conversion GDF, projection 2154.
     """
     df = df_raw.copy()
-    
+
     # 1. Filtrage sur les communes contenant un arrêt de métro
     # On définit la liste des codes communes souhaités
-    codes_recherche = ['35238', '35051', '35281']
-    df = df[df['code_commune'].astype(str).isin(codes_recherche)]
-    
+    codes_recherche = ["35238", "35051", "35281"]
+    df = df[df["code_commune"].astype(str).isin(codes_recherche)]
+
     # 2. Filtrage métier : on ne garde que les ventes de maisons/appartements
     df = df[df["nature_mutation"] == "Vente"]
     df = df[df["type_local"].isin(["Appartement", "Maison"])]
