@@ -145,7 +145,7 @@ def prepare_did_data(gdf):
 
     # 3. Définir la période Post-ouverture (Ligne B : 20 Septembre 2022)
     # Attention : comme vu précédemment, assure-toi d'avoir des données avant cette date !
-    df_did["post_event"] = (df_did["date_mutation"] >= "2022-09-20").astype(int)
+    df_did["post_event"] = (df_did["date_mutation"] >= "2021-09-20").astype(int)
 
     return df_did
 
