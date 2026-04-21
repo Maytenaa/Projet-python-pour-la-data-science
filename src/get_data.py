@@ -26,9 +26,9 @@ def fetch_metro_api(url):
 
 def fetch_dvf_api(url):
     """
-    Récupère les données DVF via un miroir stable ou le stockage s3 si disponible.
+    Récupère les données DVF .
     """
-    print("--- Récupération DVF (Source miroir stable) ---")
+    print("--- Récupération DVF  ---")
 
     try:
         chunks = pd.read_csv(

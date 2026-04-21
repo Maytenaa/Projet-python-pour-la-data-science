@@ -1,15 +1,14 @@
 import geopandas as gpd
 import pandas as pd
 
+
 def merge_yearly_dvf(df_list):
     """
     Fusionne une liste de DataFrames DVF en un seul.
-    ignore_index=True est crucial pour refaire une indexation propre de 0 à N.
     """
-    print("\n--- Fusion des bases DVF en cours ---")
     df_merged = pd.concat(df_list, ignore_index=True)
-    print(f"Fusion terminée. Taille finale : {df_merged.shape[0]} lignes, {df_merged.shape[1]} colonnes.")
     return df_merged
+
 
 def clean_dvf_data(df_raw):
     """
@@ -27,7 +26,9 @@ def clean_dvf_data(df_raw):
     df = df[df["type_local"].isin(["Appartement", "Maison"])]
 
     # 3. Suppression des lignes sans prix ou sans coordonnées
-    df = df.dropna(subset=["valeur_fonciere", "latitude", "longitude"])
+    df = df.dropna(
+        subset=["valeur_fonciere", "latitude", "longitude", "surface_reelle_bati"]
+    )
 
     # 4. Conversion en GeoDataFrame (WGS84 d'abord)
     gdf_dvf = gpd.GeoDataFrame(
@@ -37,7 +38,7 @@ def clean_dvf_data(df_raw):
     # 5. Projection en Lambert 93 (mètres) pour les calculs de distance
     gdf_dvf = gdf_dvf.to_crs(epsg=2154)
 
-    # 6. Nettoyage statistique # à compléter
+    # 6. Nettoyage statistique
     gdf_dvf = gdf_dvf[gdf_dvf["surface_reelle_bati"] > 0]
 
     # Sélection des colonnes essentielles pour l'analyse de prix
@@ -121,16 +122,18 @@ def clean_metro_data(gdf_metro_raw):
 
     return gdf
 
+
 def remove_extreme_values(gdf, variable, seuil_bas, seuil_haut):
     """
     Filtre le GeoDataFrame en fonction des seuils déterminés lors de l'analyse.
-    """   
-    # Application des filtres 
-    mask = (gdf[f'{variable}'] >= seuil_bas) & (gdf[f'{variable}'] <= seuil_haut)
+    """
+    # Application des filtres
+    mask = (gdf[f"{variable}"] >= seuil_bas) & (gdf[f"{variable}"] <= seuil_haut)
     # Filtrage final
     df_filtered = gdf[mask].copy()
-     
+
     return df_filtered
+
 
 def merge_dvf_by_line(gdf_dvf, gdf_metro):
     """

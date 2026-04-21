@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 
+
 def preparer_et_entrainer(df_rennes, gdf_metro):
     """
     Prépare les données, calcule la distance au métro et entraîne le modèle.
