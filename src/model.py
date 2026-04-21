@@ -1,62 +1,72 @@
-# model.py
 import pandas as pd
-import geopandas as gpd
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 
+<<<<<<< HEAD
 
 def preparer_et_entrainer(df_rennes, gdf_metro):
+=======
+def preparer_et_entrainer_did(gdf_final):
+>>>>>>> 261c9ae97294d73c38aba6d3a6a46b4027346f53
     """
-    Prépare les données, calcule la distance au métro et entraîne le modèle.
+    Entraîne un modèle complet avec Feature Engineering.
     """
-    # 1. Conversion spatiale
-    gdf_rennes = gpd.GeoDataFrame(
-        df_rennes, 
-        geometry=gpd.points_from_xy(df_rennes.longitude, df_rennes.latitude),
-        crs="EPSG:4326"
-    ).to_crs("EPSG:2154")
+    # 1. Feature Engineering (Traitement des données)
+    df = gdf_final.copy()
     
-    gdf_metro = gdf_metro.to_crs("EPSG:2154")
-
-    # 2. Calcul de la distance minimale
-    print("Calcul des distances (cela peut prendre un instant)...")
-    gdf_rennes['dist_min_metro'] = gdf_rennes.geometry.apply(
-        lambda geom: gdf_metro.distance(geom).min()
-    )
-
-    # 3. Préparation des features
-    gdf_rennes['date_mutation'] = pd.to_datetime(gdf_rennes['date_mutation'])
-    gdf_rennes['annee'] = gdf_rennes['date_mutation'].dt.year
+    # Conversion date en année (numeric)
+    df['annee'] = pd.to_datetime(df['date_mutation'], errors='coerce').dt.year.fillna(2026)
     
-    df_clean = gdf_rennes.dropna(subset=['valeur_fonciere', 'surface_reelle_bati', 'nombre_pieces_principales'])
+    # Encodage du type_local
+    le_type = LabelEncoder()
+    df['type_local_encoded'] = le_type.fit_transform(df['type_local'].astype(str))
     
-    le = LabelEncoder()
-    df_clean['type_local_code'] = le.fit_transform(df_clean['type_local'].astype(str))
-
-    features = ['surface_reelle_bati', 'nombre_pieces_principales', 'dist_min_metro', 'annee', 'type_local_code']
-    X = df_clean[features]
-    y = df_clean['valeur_fonciere']
-
-    # 4. Entraînement
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    model = RandomForestRegressor(n_estimators=100, random_state=42)
-    model.fit(X_train, y_train)
+    # Remplissage des valeurs manquantes (pour la surface terrain par exemple)
+    df['surface_terrain'] = df['surface_terrain'].fillna(0)
     
-    return model, features
+    # 2. Choix des features (Variables explicatives)
+    features = [
+        'nombre_pieces_principales', 
+        'surface_reelle_bati', 
+        'surface_terrain', 
+        'dist_metro_A', 
+        'dist_metro_B',
+        'annee', 
+        'type_local_encoded'
+    ]
+    
+    X = df[features]
+    y = df['prix_m2']
+    
+    # 3. Entraînement
+    model = RandomForestRegressor(n_estimators=200, random_state=42)
+    model.fit(X, y)
+    
+    return model, features, le_type
 
-
-def predire_impact_nouvelle_station(model, surface, pieces, type_local_code, annee, distance_metro=0):
+def predire_impact_nouvelle_station(model, nouveau_bien_features, label_encoder):
     """
-    Simule le prix d'un bien avec une nouvelle station de métro (distance=0).
+    Prédiction robuste avec conversion automatique des types.
     """
-    # Création du dataframe d'input avec les mêmes colonnes que lors de l'entraînement
-    input_data = pd.DataFrame({
-        'surface_reelle_bati': [surface],
-        'nombre_pieces_principales': [pieces],
-        'dist_min_metro': [distance_metro], # 0 pour une station juste à côté
-        'annee': [annee],
-        'type_local_code': [type_local_code]
-    })
+    # Conversion du dictionnaire en DataFrame
+    df_input = pd.DataFrame([nouveau_bien_features])
     
-    return model.predict(input_data)[0]
+    # Application du même encodage que lors de l'entraînement
+    if 'type_local' in df_input.columns:
+        df_input['type_local_encoded'] = label_encoder.transform(df_input['type_local'].astype(str))
+        df_input = df_input.drop(columns=['type_local'])
+        
+    # Liste des colonnes attendues (IMPORTANT : ordre identique au training)
+    features_attendues = [
+        'nombre_pieces_principales', 'surface_reelle_bati', 'surface_terrain', 
+        'dist_metro_A', 'dist_metro_B', 'annee', 'type_local_encoded'
+    ]
+    
+    # Remplissage automatique si une colonne manque
+    for col in features_attendues:
+        if col not in df_input.columns:
+            df_input[col] = 0
+            
+    # Tri et prédiction
+    df_input = df_input[features_attendues]
+    return model.predict(df_input)[0]
