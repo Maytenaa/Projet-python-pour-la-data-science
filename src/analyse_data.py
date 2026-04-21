@@ -1,8 +1,3 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-
 def extreme_value_prix(df):
     """
     Calcule les seuils bas et hauts basés sur les données réelles du prix au m².
