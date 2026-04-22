@@ -1,7 +1,10 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 from matplotlib.colors import TwoSlopeNorm
+
 
 
 def preparer_et_entrainer(gdf_final):
