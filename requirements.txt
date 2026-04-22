@@ -5,3 +5,5 @@ pyogrio
 matplotlib
 mapclassify
 scikit-learn
+seaborn
+numpy
