@@ -4,3 +4,4 @@ requests
 pyogrio
 matplotlib
 mapclassify
+scikit-learn
